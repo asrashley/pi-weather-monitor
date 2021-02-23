@@ -296,19 +296,22 @@ class WeatherMonitor:
             return
         self.samples = []
         with filename.open('rt') as src:
-            reader = csv.DictReader(src)
-            for row in reader:
-                try:
-                    values: List[float] = [float(row.get(probe.name, 0)) for probe in self.PROBES]
-                    timestamp = datetime.datetime.strptime(
-                        row['timestamp'], self.CSV_TIMESTAMP_FORMAT)
-                    sample = Sample(timestamp.timestamp(), values)
-                    self.samples.append(sample)
-                except (KeyError, TypeError) as err:
-                    print(err)
-                    print([probe.name for probe in self.PROBES])
-                    print(row)
-                    print('=====')
+            try:
+                reader = csv.DictReader(src)
+                for row in reader:
+                    try:
+                        values: List[float] = [float(row.get(probe.name, 0)) for probe in self.PROBES]
+                        timestamp = datetime.datetime.strptime(
+                            row['timestamp'], self.CSV_TIMESTAMP_FORMAT)
+                        sample = Sample(timestamp.timestamp(), values)
+                        self.samples.append(sample)
+                    except (KeyError, TypeError) as err:
+                        print(err)
+                        print([probe.name for probe in self.PROBES])
+                        print(row)
+                        print('=====')
+            except (csv.Error) as csv_err:
+                print(f'CSV file error: {csv_err}')
 
     def append_sample_to_csv(self, sample: Sample) -> None:
         timestamp = datetime.datetime.fromtimestamp(sample.timestamp)
