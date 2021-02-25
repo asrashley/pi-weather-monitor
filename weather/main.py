@@ -325,7 +325,7 @@ class WeatherMonitor:
                 dst.write(','.join([p.name for p in self.PROBES]))
                 dst.write('\n')
             dst.write(timestamp.strftime(self.CSV_TIMESTAMP_FORMAT)+',')
-            dst.write(','.join([str(v) for v in sample.values]))
+            dst.write(','.join([str(round(v,2)) for v in sample.values]))
             dst.write('\n')
 
     def run(self):
